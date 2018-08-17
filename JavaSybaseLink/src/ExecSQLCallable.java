@@ -69,8 +69,11 @@ public class ExecSQLCallable implements Callable<String> {
 					for (int c = 1; c< colCount+1; c++)
 					{
 						Object val = rs.getObject(c);
-						if (val == null) continue;
-						
+						if (val == null && request.allownull) {
+                                                    row.put(columns[c], null);
+                                                    continue;
+                                                }                                                
+                                                else if (val != null) {
 						int dataType = meta.getColumnType(c);
 						switch (dataType)
 						{
@@ -83,6 +86,7 @@ public class ExecSQLCallable implements Callable<String> {
 								row.put(columns[c], rs.getObject(c));
 						}
 						//System.out.println(columns[c] + ": " + dataType);
+                                                } else continue;
 					}
 				}
 				rs.close();

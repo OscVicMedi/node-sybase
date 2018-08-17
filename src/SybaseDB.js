@@ -1,3 +1,8 @@
+/*
+	17-08-2018
+	Oscar Vicente
+*/
+
 var spawn = require('child_process').spawn;
 var JSONStream = require('JSONStream');
 var fs = require("fs");
@@ -7,7 +12,7 @@ var fs = require("fs");
 var PATH_TO_JAVA_BRIDGE1 = process.env.PWD + "/node_modules/sybase/JavaSybaseLink/dist/JavaSybaseLink.jar";
 var PATH_TO_JAVA_BRIDGE2 = "./JavaSybaseLink/dist/JavaSybaseLink.jar";
 
-function Sybase(host, port, dbname, username, password, logTiming, pathToJavaBridge)
+function Sybase(host, port, dbname, username, password, logTiming, pathToJavaBridge, allownull, autocommit)
 {
     this.connected = false;
     this.host = host;
@@ -16,9 +21,19 @@ function Sybase(host, port, dbname, username, password, logTiming, pathToJavaBri
     this.username = username;
     this.password = password;    
     this.logTiming = (logTiming == true);
+    if (allownull === undefined) {
+        this.allownull = false;
+    } else {
+        this.allownull = allownull;
+    }
+    if (autocommit === undefined) {
+        this.autocommit = false;
+    } else {
+        this.autocommit = autocommit;
+    }
     
     this.pathToJavaBridge = pathToJavaBridge;
-    if (this.pathToJavaBridge === undefined)
+    if (this.pathToJavaBridge === undefined || this.pathToJavaBridge.trim() === '')
     {
     	if (fs.existsSync(PATH_TO_JAVA_BRIDGE1))
     		this.pathToJavaBridge = PATH_TO_JAVA_BRIDGE1;
@@ -35,7 +50,7 @@ function Sybase(host, port, dbname, username, password, logTiming, pathToJavaBri
 Sybase.prototype.connect = function(callback)
 {
     var that = this;
-    this.javaDB = spawn('java',["-jar",this.pathToJavaBridge, this.host, this.port, this.dbname, this.username, this.password]);
+    this.javaDB = spawn('java',["-jar",this.pathToJavaBridge, this.host, this.port, this.dbname, this.username, this.password, this.allownull, this.autocommit]);
 
     var hrstart = process.hrtime();
 	this.javaDB.stdout.once("data", function(data) {
@@ -91,13 +106,16 @@ Sybase.prototype.query = function(sql, callback)
     var strMsg = JSON.stringify(msg).replace(/[\n]/g, '\\n');
     msg.callback = callback;
     msg.hrstart = hrstart;
-
-    console.log("this: " + this + " currentMessages: " +  this.currentMessages + " this.queryCount: " + this.queryCount);
+    
+    
+    //console.log("this: " + this + " currentMessages: " +  this.currentMessages + " this.queryCount: " + this.queryCount);
+    
     
     this.currentMessages[msg.msgId] = msg;
-
+    
     this.javaDB.stdin.write(strMsg + "\n");
-    console.log("sql request written: " + strMsg);
+    //console.log("sql request written: " + strMsg);
+    
 };
 
 Sybase.prototype.onSQLResponse = function(jsonMsg)
@@ -120,7 +138,7 @@ Sybase.prototype.onSQLResponse = function(jsonMsg)
 
 
 	if (this.logTiming)
-		console.log("Execution time (hr): %ds %dms dbTime: %dms dbSendTime: %d sql=%s", hrend[0], hrend[1]/1000000, javaDuration, sendTimeMS, request.sql);
+		//console.log("Execution time (hr): %ds %dms dbTime: %dms dbSendTime: %d sql=%s", hrend[0], hrend[1]/1000000, javaDuration, sendTimeMS, request.sql);
 	request.callback(err, result);
 };
 

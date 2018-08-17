@@ -48,14 +48,17 @@ public class SybaseDB {
 		this.props = props;
 		this.props.put("user", username);
 		this.props.put("password", password);		
-		df.setTimeZone(TimeZone.getTimeZone("UTC"));
+		df.setTimeZone(TimeZone.getTimeZone("UTC")); 
 	}
 
-	public boolean connect()
+	public boolean connect(boolean autocommit)
 	{
 		try {
 			SybDriver sybDriver = (SybDriver) Class.forName("com.sybase.jdbc3.jdbc.SybDriver").newInstance();
-			conn = DriverManager.getConnection("jdbc:sybase:Tds:" + host + ":" + port + "/" + dbname, props);
+			conn = DriverManager.getConnection("jdbc:sybase:Tds:" + host + ":" + port + "?ServiceName=" + dbname, props);
+                        //jdbc:sybase:Tds:{host}:{port}?ServiceName={dbname}  
+                        if (autocommit == false) 
+                            conn.setAutoCommit(false); //Se agrego esto para permitir autocommit, necesario para el consumo de sp                        
 			return true;
 
 		} catch (Exception ex) {

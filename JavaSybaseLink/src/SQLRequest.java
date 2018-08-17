@@ -7,4 +7,5 @@ public class SQLRequest {
 	String sql;
 	long sentTime;
 	long javaStartTime;
+        boolean allownull;
 }
