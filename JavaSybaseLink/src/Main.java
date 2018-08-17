@@ -30,12 +30,15 @@ public class Main implements SQLRequestListener {
 			System.err.println("Expecting the arguments: host, port, dbname, username, password, allownull, autocommit");
 			System.exit(1);
 		}
-		if (args.length > 4)
-			pw = args[4];
-                if (args.length > 5)
+		if (args.length > 4) {
+                    pw = args[4];
+                }
+                if (args.length > 5) {
                     allownull = Boolean.parseBoolean(args[5]);
-                if (args.length > 6)
+                }
+                if (args.length > 6){
                     autocommit = Boolean.parseBoolean(args[6]);               
+                }
                 
 		m = new Main(args[0], Integer.parseInt(args[1]), args[2], args[3], pw, allownull, autocommit);
     }

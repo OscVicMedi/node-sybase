@@ -57,8 +57,9 @@ public class SybaseDB {
 			SybDriver sybDriver = (SybDriver) Class.forName("com.sybase.jdbc3.jdbc.SybDriver").newInstance();
 			conn = DriverManager.getConnection("jdbc:sybase:Tds:" + host + ":" + port + "?ServiceName=" + dbname, props);
                         //jdbc:sybase:Tds:{host}:{port}?ServiceName={dbname}  
-                        if (autocommit == false) 
+                        if (autocommit == false) {                            
                             conn.setAutoCommit(false); //Se agrego esto para permitir autocommit, necesario para el consumo de sp                        
+                        }
 			return true;
 
 		} catch (Exception ex) {
