@@ -22,7 +22,7 @@ public class SybaseDB {
 	public static final int TYPE_TIME_STAMP = 93;
 	public static final int TYPE_DATE = 91;
 
-	public static final int NUMBER_OF_THREADS = 5;
+	public static final int NUMBER_OF_THREADS = 10;
 
 	String host;
 	Integer port;
