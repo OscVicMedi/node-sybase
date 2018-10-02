@@ -3,6 +3,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import com.sybase.jdbc3.jdbc.SybDriver;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -55,19 +56,49 @@ public class SybaseDB {
 	{
 		try {
 			SybDriver sybDriver = (SybDriver) Class.forName("com.sybase.jdbc3.jdbc.SybDriver").newInstance();
-			conn = DriverManager.getConnection("jdbc:sybase:Tds:" + host + ":" + port + "?ServiceName=" + dbname, props);
+			conn = DriverManager.getConnection("jdbc:sybase:Tds:" + host + ":" + port + "?ServiceName=" + dbname, props);                        
                         //jdbc:sybase:Tds:{host}:{port}?ServiceName={dbname}  
                         if (autocommit == false) {                            
                             conn.setAutoCommit(false); //Se agrego esto para permitir autocommit, necesario para el consumo de sp                        
                         }
 			return true;
 
-		} catch (Exception ex) {
+		} catch (ClassNotFoundException ex) {
 			System.err.println(ex);
 			System.err.println(ex.getMessage());
 			return false;
-		}
+		} catch (IllegalAccessException ex) {
+                    System.err.println(ex);
+                    System.err.println(ex.getMessage());
+                    return false;
+            } catch (InstantiationException ex) {
+                System.err.println(ex);
+                System.err.println(ex.getMessage());
+                return false;
+            } catch (SQLException ex) {
+                System.err.println(ex);
+                System.err.println(ex.getMessage());
+                return false;
+            }
 	}
+        
+        //Funcion para hacer la desconecion correctamente
+        public boolean disconnect() {
+            try {
+                if(!conn.isClosed()) {
+                    System.out.println("Disconnecting...");
+                    conn.close();
+                    return true;
+                } else
+                {
+                    return true;
+                }                
+            } catch (SQLException ex) {
+		System.err.println(ex);
+		System.err.println(ex.getMessage());
+		return false;
+            }
+        }
 
 	public void execSQL(SQLRequest request)
 	{

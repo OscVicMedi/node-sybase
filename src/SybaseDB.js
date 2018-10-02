@@ -80,6 +80,7 @@ Sybase.prototype.connect = function(callback)
 
 Sybase.prototype.disconnect = function()
 {
+	this.javaDB.stdin.write("Exit()" + "\n"); //Para enviar el Exit() a la consola de la Libreria
 	this.javaDB.kill();
 	this.connected = false;	
 }

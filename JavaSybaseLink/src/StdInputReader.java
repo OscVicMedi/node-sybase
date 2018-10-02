@@ -18,32 +18,54 @@ public class StdInputReader {
         private boolean allownull = false;    
 	public StdInputReader(boolean allownull) {
             this.allownull = allownull;
-	}
-
+	}     
+        
 	public void startReadLoop()
 	{
 		String nextLine;
 		try {
 			while ((nextLine = inputBuffer.readLine()) != null) {
-				nextLine = nextLine.replaceAll("\\n", "\n");
-				sendEvent(nextLine);
+				nextLine = nextLine.replaceAll("\\n", "\n");                                                                 
+                                sendEvent(nextLine);
 			}
 		} catch (IOException ex) {
 			System.err.println("IO exception: " + ex);
 		}
 	}
-
+        
+        //Funcion para soportar Exit()
+        public int startReadLoop_()
+        {
+            String nextLine;
+		try {
+			while ((nextLine = inputBuffer.readLine()) != null) {
+				nextLine = nextLine.replaceAll("\\n", "\n");                                 
+                                if (nextLine.equals("Exit()")) {                                    
+                                    return 0;
+                                } else
+                                {                                    
+                                    sendEvent(nextLine);                                    
+                                }
+			}
+                        return 0;
+		} catch (IOException ex) {
+			System.err.println("IO exception: " + ex);
+                        return 0;
+		}
+        }
+        
 	private void sendEvent(String sqlRequest)
 	{
 		long startTime = System.currentTimeMillis();
 		SQLRequest request;
 		try {
 			JSONObject val = (JSONObject) JSONValue.parse(sqlRequest);
+                        
 			request = new SQLRequest();
 			request.msgId = (Integer)val.get("msgId");
 			request.sql = (String)val.get("sql");
 			request.javaStartTime = startTime;
-                        request.allownull = this.allownull;
+                        request.allownull = this.allownull;                        
 		} catch (Exception e)
 		{
 			request = null;

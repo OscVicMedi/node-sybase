@@ -18,6 +18,7 @@ public class Main implements SQLRequestListener {
 	StdInputReader input;
         boolean allownull;
         boolean autocommit;
+        int res;
 
     public static void main(String[] args) {
 
@@ -63,8 +64,17 @@ public class Main implements SQLRequestListener {
 		// send the connected message.
 		System.out.println("connected");
 
-		// blocking call don't do anything under here.
-		input.startReadLoop();
+		// blocking call don't do anything under here.                
+		//input.startReadLoop();
+                
+                res = input.startReadLoop_();
+                System.out.println(res);
+                if (res == 0)
+                {                    
+                    db.disconnect();
+                    System.out.println("disconnected");
+                }
+                
 	}
 
 	public void sqlRequest(SQLRequest request)
